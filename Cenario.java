@@ -8,6 +8,7 @@ package working;
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -27,9 +28,13 @@ import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JColorChooser;
 import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
@@ -39,9 +44,10 @@ import javax.swing.JPanel;
  * Data   : 14 - 01 - 2021
  * Objectivo : Construir o paint que desnha em tempo real 
  */
-public class Cenario extends JPanel  {
+public class Cenario extends JPanel implements Runnable  {
     
     private  Graphics2D ig2;
+   
     private ArrayList<Point> lapis = new ArrayList<>();
     private JButton choose ;
     private Color color;
@@ -50,6 +56,12 @@ public class Cenario extends JPanel  {
     BufferedImage bi;
     private int [] arrayX =  new int[1000];
     private int [] arrayY =  new int[1000];
+    private AnimationAdobeYuri animationAdobeYuri = new AnimationAdobeYuri();
+    private Thread thread;
+    private JMenuBar barra = new JMenuBar();
+    private JMenu file, edit, view, insert, modify, text, commands, control,debug,window,help;
+    private JMenuItem  new_project, new_file, open_project,openRecentProject,SaveAs ;
+    private Font fontDoMenu = new Font("Serief",Font.BOLD,16);
     
  
 
@@ -59,11 +71,13 @@ public class Cenario extends JPanel  {
     public Cenario() {
         
         
-
+       
+        
         salvar = new JButton("Save Frame");
         choose = new JButton("Cor ");
         bi     = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-        
+        thread = new Thread(this);
+        thread.start();
         
         choose.addActionListener(new ActionListener() {
             @Override
@@ -137,9 +151,84 @@ public class Cenario extends JPanel  {
     {
         
         JFrame frame = new JFrame();
-        frame.setTitle("Paint ");
+        frame.setTitle("Adobe Yuri  ");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(500,500);
+        frame.setSize(1400,1200);
+         
+        barra.setBackground(Color.GRAY);
+        barra.setForeground(Color.white);
+       
+        frame.setJMenuBar(barra);
+        
+        file = new JMenu("File"); 
+        file.setFont(fontDoMenu);
+        
+        edit = new JMenu("Edit");
+        edit.setFont(fontDoMenu);
+         
+         
+        view = new JMenu("View");
+        view.setFont(fontDoMenu);
+        
+        
+        insert = new JMenu("Insert");
+        insert.setFont(fontDoMenu);
+        
+        modify = new JMenu("Modify");
+        modify.setFont(fontDoMenu);
+        
+        text = new JMenu("Text");
+        text.setFont(fontDoMenu);
+        
+        commands = new JMenu("Commands");
+        commands .setFont(fontDoMenu);
+        
+        
+        control = new JMenu("Control");
+        control.setFont(fontDoMenu);
+        
+        debug = new JMenu("Debug");
+        debug .setFont(fontDoMenu);
+        
+        
+        
+        window = new JMenu("Window");
+        window.setFont(fontDoMenu);
+        
+        help = new JMenu("Help");
+        help.setFont(fontDoMenu);
+        
+        //-- Adicionar os items do menu principal 
+        
+        barra.add(file);
+        barra.add(edit);
+        barra.add(view);
+        barra.add(insert);
+        barra.add(modify);
+        barra.add(text);
+        barra.add(commands);
+        barra.add(control);
+        barra.add(debug);
+        barra.add(window);
+        barra.add(help);
+        
+        //  Inicializar & Adicionar os sub-items do menu 
+        
+         new_project = new JMenuItem("New Project.. Ctrl+Shift+N");
+         new_project.setIcon(new ImageIcon(this.getClass().getResource("hat32.png")));
+         new_file = new JMenuItem("New File.. Ctrl+N");
+         open_project = new JMenuItem("Open project.. Ctrl+Shift+O");
+         openRecentProject = new JMenuItem("Open Recent project");
+         SaveAs = new JMenuItem("Save as");
+        
+        
+        //--
+        file.add(new_project);
+        file.add(new_file);
+        file.add(open_project);
+        file.add(openRecentProject);
+        file.add( SaveAs);
+        
         frame.getContentPane().add(this);
         frame.setVisible(true);
         
@@ -179,9 +268,10 @@ public class Cenario extends JPanel  {
                arrayY[i] = lapis.get(i).y;
         }        
         
-        
-        
       
+        //---- animation 
+        
+        //animationAdobeYuri.paint(graphics2D);
         
         g.dispose(); // clone design cenary 
     }
@@ -199,6 +289,26 @@ public class Cenario extends JPanel  {
             return out_put.toString();
         
         }
+
+    @Override
+    public void run() {
+       
+        
+        while(true)
+        {
+            
+            try {
+                
+                animationAdobeYuri.updateCenary();
+                Thread.sleep(40);
+                repaint();
+                
+            } catch (InterruptedException ex) {
+                
+                System.out.println("All right");
+            }
+        }
+    }
     
     
     
