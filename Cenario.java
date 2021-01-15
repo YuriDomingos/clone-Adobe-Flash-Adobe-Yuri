@@ -241,7 +241,7 @@ public class Cenario extends JPanel implements Runnable  {
                  
                  //-- Action in this line 
                  
-                  String nome_imagem = gerarString(6, "ABCDEFGHIJKLMNOPQRSTUVWXYabcdefghijklmnopqrstuvwxyz");
+                  String nome_imagem = gerarString(6, "ABCDEYabcdefghijkl");
                     try {
              
                             ImageIO.write(bi, "PNG", new File("Imagens_da_animations/"+nome_imagem+".PNG"));
