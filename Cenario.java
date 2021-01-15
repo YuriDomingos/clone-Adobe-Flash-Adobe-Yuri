@@ -54,8 +54,8 @@ public class Cenario extends JPanel implements Runnable  {
     private JButton salvar;
     int width = 500, height = 500;
     BufferedImage bi;
-    private int [] arrayX =  new int[1000];
-    private int [] arrayY =  new int[1000];
+    private int [] arrayX =  new int[10000];
+    private int [] arrayY =  new int[10000];
     private AnimationAdobeYuri animationAdobeYuri = new AnimationAdobeYuri();
     private Thread thread;
     private JMenuBar barra = new JMenuBar();
@@ -113,6 +113,7 @@ public class Cenario extends JPanel implements Runnable  {
         
         // second option 
         
+          
         salvar.addActionListener(new ActionListener(){
             
             @Override
@@ -216,12 +217,51 @@ public class Cenario extends JPanel implements Runnable  {
         
          new_project = new JMenuItem("New Project.. Ctrl+Shift+N");
          new_project.setIcon(new ImageIcon(this.getClass().getResource("hat32.png")));
+         
          new_file = new JMenuItem("New File.. Ctrl+N");
+         new_file.setIcon(new ImageIcon(this.getClass().getResource("tec24.png")));
+         
          open_project = new JMenuItem("Open project.. Ctrl+Shift+O");
+         open_project .setIcon(new ImageIcon(this.getClass().getResource("yes.png")));
          openRecentProject = new JMenuItem("Open Recent project");
+         
+         
          SaveAs = new JMenuItem("Save as");
+         SaveAs.setIcon(new ImageIcon(this.getClass().getResource("sistema32.png")));
         
+        SaveAs.addActionListener(new ActionListener(){
+             
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+                
+                 for ( int i = 0; i < arrayX.length; i++)
+                 {
+                      ig2.fill(new Ellipse2D.Double(arrayX[i], arrayY[i], 10,10));
+                 }
+                 
+                 //-- Action in this line 
+                 
+                  String nome_imagem = gerarString(6, "ABCDEFGHIJKLMNOPQRSTUVWXYabcdefghijklmnopqrstuvwxyz");
+                    try {
+             
+                            ImageIO.write(bi, "PNG", new File("Imagens_da_animations/"+nome_imagem+".PNG"));
+                            
+                          
+                         JOptionPane.showMessageDialog(null, "Frame Guardado com sucesso ");
+                          
+   
+            
+                        } catch (IOException ex) {
+          
+                                  ex.printStackTrace();
+                        }
+                    
+                    }
+            
+             
+         });
         
+       
         //--
         file.add(new_project);
         file.add(new_file);
