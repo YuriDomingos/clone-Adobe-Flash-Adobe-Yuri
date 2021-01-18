@@ -8,9 +8,13 @@ package working;
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.GridLayout;
 import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
@@ -32,11 +36,14 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JColorChooser;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
+import javax.swing.border.LineBorder;
 
 /**
  *
@@ -44,10 +51,11 @@ import javax.swing.JPanel;
  * Data   : 14 - 01 - 2021
  * Objectivo : Construir o paint que desnha em tempo real 
  */
-public class Cenario extends JPanel implements Runnable  {
+public class Cenario extends JPanel implements Runnable  
+
+{
     
     private  Graphics2D ig2;
-   
     private ArrayList<Point> lapis = new ArrayList<>();
     private JButton choose ;
     private Color color;
@@ -61,20 +69,21 @@ public class Cenario extends JPanel implements Runnable  {
     private JMenuBar barra = new JMenuBar();
     private JMenu file, edit, view, insert, modify, text, commands, control,debug,window,help;
     private JMenuItem  new_project, new_file, open_project,openRecentProject,SaveAs ;
+    private JMenuItem new_pictur, efects, texto;
     private Font fontDoMenu = new Font("Serief",Font.BOLD,16);
+    private JPanel PanelPrincipal,PanelMenu,PanelPaleta,PanelStettings,PanelTimeLine; 
     
- 
-
-   
    
     
     public Cenario() {
         
         
+       //--- Configurações dos páneis
        
-        
+       
         salvar = new JButton("Save Frame");
         choose = new JButton("Cor ");
+       
         bi     = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         thread = new Thread(this);
         thread.start();
@@ -90,7 +99,7 @@ public class Cenario extends JPanel implements Runnable  {
         
    
         add(choose);
-        add(salvar, BorderLayout.AFTER_LAST_LINE);
+      
         
         addMouseMotionListener(new MouseMotionListener()
         {
@@ -111,40 +120,7 @@ public class Cenario extends JPanel implements Runnable  {
         });
         
         
-        // second option 
-        
-          
-        salvar.addActionListener(new ActionListener(){
-            
-            @Override
-            public void actionPerformed(ActionEvent ae) {
-               
-                 
-                 for ( int i = 0; i < arrayX.length; i++)
-                 {
-                      ig2.fill(new Ellipse2D.Double(arrayX[i], arrayY[i], 10,10));
-                 }
-                 
-                 //-- Action in this line 
-                 
-                  String nome_imagem = gerarString(6, "ABCDEFGHIJKLMNOPQRSTUVWXYabcdefghijklmnopqrstuvwxyz");
-                    try {
-             
-                            ImageIO.write(bi, "PNG", new File("Imagens_da_animations/"+nome_imagem+".PNG"));
-                            
-                          
-                             System.out.println(" Imagem adicionada com suscesso");
-                          
-            
-                        } catch (IOException ex) {
-          
-                                  ex.printStackTrace();
-                        }
-                    
-                    }
-            
-        });
-               
+       
        init();
     }
     
@@ -155,13 +131,18 @@ public class Cenario extends JPanel implements Runnable  {
         frame.setTitle("Adobe Yuri  ");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(1400,1200);
-         
+        //frame.setResizable(false);
+        frame.getContentPane().add(this);
+       // frame.setLayout(new BorderLayout(8,6));
+        frame.setBackground(Color.white);
+   
         barra.setBackground(Color.GRAY);
-        barra.setForeground(Color.white);
+      
        
         frame.setJMenuBar(barra);
+        file = new JMenu("File");
+     
         
-        file = new JMenu("File"); 
         file.setFont(fontDoMenu);
         
         edit = new JMenu("Edit");
@@ -224,9 +205,19 @@ public class Cenario extends JPanel implements Runnable  {
          open_project = new JMenuItem("Open project.. Ctrl+Shift+O");
          open_project .setIcon(new ImageIcon(this.getClass().getResource("yes.png")));
          openRecentProject = new JMenuItem("Open Recent project");
+        
+         
+         //--- Seção para Inserir a imagem em tempo real da memória do utilizador 
+         //new_pictur, efects, texto;
+         new_pictur = new JMenuItem("Inserir Imagem");
+         efects     = new JMenuItem("Adicionar Efeitos 2D");
+         texto      = new JMenuItem("Adicionar cenário como Frame "); // podemos adicionar imagem 
+         
          
          
          SaveAs = new JMenuItem("Save as");
+         
+        
          SaveAs.setIcon(new ImageIcon(this.getClass().getResource("sistema32.png")));
         
         SaveAs.addActionListener(new ActionListener(){
@@ -269,7 +260,95 @@ public class Cenario extends JPanel implements Runnable  {
         file.add(openRecentProject);
         file.add( SaveAs);
         
-        frame.getContentPane().add(this);
+        //-- adicionar para o insert 
+        
+        insert.add(new_pictur);
+        insert.add(efects );
+        insert.add(texto );
+        
+  
+        PanelPaleta = new JPanel();
+       // PanelPaleta.setBorder(new LineBorder(Color.BLACK,3));
+        PanelPaleta.setBackground(Color.DARK_GRAY);
+        PanelPaleta.setPreferredSize(new Dimension(95,150));
+        PanelPaleta.setLayout(new FlowLayout(20,8,12));
+        
+        //-- Adicionar as imagens do cantinho 
+        
+        
+        JLabel paletinha = new JLabel("");
+        JLabel paletinha2 = new JLabel("");
+        JLabel paletinha3 = new JLabel("");
+        JLabel paletinha4 = new JLabel("");
+        JLabel paletinha5 = new JLabel("");
+        JLabel paletinha6 = new JLabel("");
+        JLabel paletinha7 = new JLabel("");
+        JLabel paletinha8 = new JLabel("");
+        JLabel paletinha9 = new JLabel("");
+        JLabel paletinha10 = new JLabel("");
+        JLabel paletinha11 = new JLabel("");
+        JLabel paletinha12 = new JLabel("");
+        JLabel paletinha13 = new JLabel("");
+        JLabel paletinha14 = new JLabel("");
+        
+        paletinha.setIcon(new ImageIcon(this.getClass().getResource("Icon4.png")));
+        paletinha2.setIcon(new ImageIcon(this.getClass().getResource("U7d.png")));
+        paletinha3.setIcon(new ImageIcon(this.getClass().getResource("Icoc11.png")));
+        paletinha4.setIcon(new ImageIcon(this.getClass().getResource("Un2.png")));
+        paletinha5.setIcon(new ImageIcon(this.getClass().getResource("Unti-2.png")));
+        paletinha6.setIcon(new ImageIcon(this.getClass().getResource("Untitled-2.png")));
+        paletinha7.setIcon(new ImageIcon(this.getClass().getResource("Icon3.png")));
+        paletinha8.setIcon(new ImageIcon(this.getClass().getResource("Icoc11.png")));
+        paletinha9.setIcon(new ImageIcon(this.getClass().getResource("tudy4.png")));
+        paletinha10.setIcon(new ImageIcon(this.getClass().getResource("Un2.png")));
+        paletinha11.setIcon(new ImageIcon(this.getClass().getResource("Icon5.png")));
+        paletinha12.setIcon(new ImageIcon(this.getClass().getResource("Icon2.png")));
+        paletinha13.setIcon(new ImageIcon(this.getClass().getResource("klo.png")));
+        paletinha14.setIcon(new ImageIcon(this.getClass().getResource("Icoc11.png")));
+        
+        
+        PanelPaleta.add(paletinha);
+        PanelPaleta.add(paletinha2);
+        PanelPaleta.add(paletinha3);
+        PanelPaleta.add(paletinha4);
+        PanelPaleta.add(paletinha5);
+        PanelPaleta.add(paletinha6);
+        PanelPaleta.add(paletinha7);
+        PanelPaleta.add(paletinha8);
+        PanelPaleta.add(paletinha9);
+        PanelPaleta.add(paletinha10);
+        PanelPaleta.add(paletinha11);
+        PanelPaleta.add(paletinha12);
+        PanelPaleta.add(paletinha13);
+        PanelPaleta.add(paletinha14);
+
+      
+        //-- Eventos dos Icons da paleta 
+        
+        
+        //-- Teremos o painel do TimeLine
+        
+        PanelTimeLine = new JPanel();
+      //  PanelTimeLine.setBorder(new LineBorder(Color.white,3));
+        PanelTimeLine.setPreferredSize(new Dimension(100,100));
+        PanelTimeLine.setBackground(Color.DARK_GRAY);
+        
+        
+        //-- Configuração do settings Panel 
+        
+        PanelStettings = new JPanel();
+        //PanelStettings.setBorder(new LineBorder(Color.BLACK,3));
+        PanelStettings.setPreferredSize(new Dimension(5,150));
+        PanelStettings.setBackground(Color.DARK_GRAY);
+        
+       
+       frame.add(PanelPaleta, BorderLayout.WEST);
+       frame.add(PanelTimeLine, BorderLayout.EAST);
+       frame.add(PanelStettings, BorderLayout.SOUTH);
+     
+       
+       
+        
         frame.setVisible(true);
         
     }
@@ -311,7 +390,7 @@ public class Cenario extends JPanel implements Runnable  {
       
         //---- animation 
         
-        //animationAdobeYuri.paint(graphics2D);
+       //animationAdobeYuri.paint(graphics2D);
         
         g.dispose(); // clone design cenary 
     }
