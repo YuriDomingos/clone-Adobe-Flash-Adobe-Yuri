@@ -15,10 +15,12 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridLayout;
+import java.awt.Image;
 import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -35,6 +37,7 @@ import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JColorChooser;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -42,6 +45,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.LineBorder;
 
@@ -72,6 +76,10 @@ public class Cenario extends JPanel implements Runnable
     private JMenuItem new_pictur, efects, texto;
     private Font fontDoMenu = new Font("Serief",Font.BOLD,16);
     private JPanel PanelPrincipal,PanelMenu,PanelPaleta,PanelStettings,PanelTimeLine; 
+    private Image loadPic;
+    private boolean picturISLoaded = false,  freeDraw = false;
+    private JTextField search;
+    
     
    
     
@@ -83,7 +91,7 @@ public class Cenario extends JPanel implements Runnable
        
         salvar = new JButton("Save Frame");
         choose = new JButton("Cor ");
-       
+        search = new JTextField(3);
         bi     = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         thread = new Thread(this);
         thread.start();
@@ -106,8 +114,12 @@ public class Cenario extends JPanel implements Runnable
             @Override
             public void mouseDragged(MouseEvent me) {
                 
-                lapis.add(me.getPoint());
-                repaint();
+                if ( freeDraw )
+                {
+                     lapis.add(me.getPoint());
+                     repaint();
+                }
+               
          
             }
 
@@ -134,7 +146,7 @@ public class Cenario extends JPanel implements Runnable
         //frame.setResizable(false);
         frame.getContentPane().add(this);
        // frame.setLayout(new BorderLayout(8,6));
-        frame.setBackground(Color.white);
+        frame.setBackground(Color.gray);
    
         barra.setBackground(Color.GRAY);
       
@@ -193,6 +205,7 @@ public class Cenario extends JPanel implements Runnable
         barra.add(debug);
         barra.add(window);
         barra.add(help);
+        
         
         //  Inicializar & Adicionar os sub-items do menu 
         
@@ -266,6 +279,36 @@ public class Cenario extends JPanel implements Runnable
         insert.add(efects );
         insert.add(texto );
         
+        new_pictur.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+        
+                JFileChooser choose_pictur = new JFileChooser();
+                choose_pictur.setCurrentDirectory(new File("."));
+                
+                int return_object = choose_pictur.showOpenDialog(null);
+                
+                
+                if ( return_object == 0)
+                {
+                    File pictur = choose_pictur.getSelectedFile();
+                    
+                    try {
+                        
+                           loadPic = ImageIO.read(pictur);
+                           picturISLoaded = true;
+                        
+                        
+                    }catch(IOException error)
+                    {
+                        JOptionPane.showMessageDialog(null, "Erro ! Lamentamos mas não conseguimos carregar a imagem ");
+                    }
+                    
+                }
+            }
+            
+        });
   
         PanelPaleta = new JPanel();
        // PanelPaleta.setBorder(new LineBorder(Color.BLACK,3));
@@ -326,6 +369,16 @@ public class Cenario extends JPanel implements Runnable
         //-- Eventos dos Icons da paleta 
         
         
+          paletinha2.addMouseListener(new MouseAdapter(){
+             
+           @Override
+                public void mouseClicked(MouseEvent e) {
+                  
+                    //System.out.println(" O usuário Clicou em mim");
+                    freeDraw = true;
+                }
+             
+         });
         //-- Teremos o painel do TimeLine
         
         PanelTimeLine = new JPanel();
@@ -338,13 +391,14 @@ public class Cenario extends JPanel implements Runnable
         
         PanelStettings = new JPanel();
         //PanelStettings.setBorder(new LineBorder(Color.BLACK,3));
-        PanelStettings.setPreferredSize(new Dimension(5,150));
+        PanelStettings.setPreferredSize(new Dimension(270,150));
         PanelStettings.setBackground(Color.DARK_GRAY);
+        PanelStettings.add(search);
         
        
        frame.add(PanelPaleta, BorderLayout.WEST);
-       frame.add(PanelTimeLine, BorderLayout.EAST);
-       frame.add(PanelStettings, BorderLayout.SOUTH);
+       frame.add(PanelTimeLine, BorderLayout.SOUTH);
+       frame.add(PanelStettings, BorderLayout.EAST);
      
        
        
@@ -363,11 +417,10 @@ public class Cenario extends JPanel implements Runnable
         
         graphics2D.clearRect(0, 0, this.getWidth(), this.getHeight());
         graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        
        
-        
         graphics2D.setColor(color);
         ig2.setColor(color);
+        
         
         
         
@@ -380,6 +433,14 @@ public class Cenario extends JPanel implements Runnable
             
         }
         */
+      
+         if (picturISLoaded)
+         {
+           graphics2D.drawImage(loadPic, this.getWidth()/2, this.getHeight()/2, null);
+         }
+         
+         
+        
         for (int i = 0; i < lapis.size(); i++)
         {
                graphics2D.fill(new Ellipse2D.Double(lapis.get(i).x, lapis.get(i).y, 10,10));
@@ -390,8 +451,10 @@ public class Cenario extends JPanel implements Runnable
       
         //---- animation 
         
-       //animationAdobeYuri.paint(graphics2D);
-        
+      // animationAdobeYuri.paint(graphics2D);
+       
+       
+    
         g.dispose(); // clone design cenary 
     }
     
